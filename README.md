@@ -1,6 +1,6 @@
 # Vercel AI SDK RAG Guide Starter Project
 
-This is the starter project for the Vercel AI SDK [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
+This is project built on Starter project for the Vercel AI SDK [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
 
 In this project, you will build a chatbot that will only respond with information that it has within its knowledge base. The chatbot will be able to both store and retrieve information. This project has many interesting use cases from customer support through to building your own second brain!
 
@@ -8,7 +8,10 @@ This project will use the following stack:
 
 - [Next.js](https://nextjs.org) 14 (App Router)
 - [Vercel AI SDK](https://sdk.vercel.ai/docs)
-- [OpenAI](https://openai.com)
+- Replaces [OpenAI](https://openai.com) with locally running Ollama
 - [Drizzle ORM](https://orm.drizzle.team)
-- [Postgres](https://www.postgresql.org/) with [ pgvector ](https://github.com/pgvector/pgvector)
+- [Postgres](https://www.postgresql.org/) with [ pgvector ](https://github.com/pgvector/pgvector) - run Postgres in Docker using `akane/pgvector`
+  ```sh
+    docker run -e POSTGRES_USER=your_postgres_user -e POSTGRES_PASSWORD=your_password --name postgres -p 5432:5432 -d ankane/pgvector
+  ```
 - [shadcn-ui](https://ui.shadcn.com) and [TailwindCSS](https://tailwindcss.com) for styling
