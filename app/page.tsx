@@ -8,11 +8,24 @@ export default function Chat() {
 
   return <main className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
     <div className="space-y-4">
-      {messages.map(message => (
-        <div key={message.id}>
-          <div className="border p-4 rounded-md">
-            <div className="font-bold">{message.role}</div>
-            <p>{message.content}</p>
+      {messages.map(m => (
+        <div key={m.id} className="whitespace-pre-wrap">
+          <div>
+            <div className="font-bold">{m.role}</div>
+            <div>
+              {m.parts.map((part, index) => {
+                if (part.type === 'text') {
+                  return <p key={index}>{part.text}</p>;
+                } else if (part.type === 'tool-invocation') {
+                  return (
+                    <span key={index} className="italic font-light">
+                      {'calling tool: ' + part.toolInvocation.toolName + ' with arguments: ' + JSON.stringify(part.toolInvocation.args)}
+                    </span>
+                  );
+                }
+                return null;
+              })}
+            </div>
           </div>
         </div>
       ))}
