@@ -11,6 +11,8 @@ import { embeddings as embeddingsTable } from '@/lib/db/schema/embeddings';
 import { cosineDistance, desc, gt, sql } from 'drizzle-orm';
 import { embed } from 'ai';
 import { ollama } from 'ollama-ai-provider';
+import fs from 'fs';
+import path from 'path';
 
 const ollamaEmbeddings = ollama.embedding('mxbai-embed-large');
 
@@ -75,6 +77,109 @@ export const findRelevantContent = async (userQuery: string) => {
   } catch (e) {
     console.error('Error searching knowledge base:', e);
     return { error: 'Error searching knowledge base: ' + (e instanceof Error ? e.message : 'Unknown error') };
+  }
+};
+
+// Parse markdown and split into sections
+const parseMarkdown = (content: string, filename: string): Array<{ title: string; content: string; source: string }> => {
+  const sections: Array<{ title: string; content: string; source: string }> = [];
+  
+  // Split by headers (# ## ###)
+  const lines = content.split('\n');
+  let currentSection = { title: '', content: '', source: filename };
+  
+  for (const line of lines) {
+    if (line.startsWith('#')) {
+      // Save previous section if it has content
+      if (currentSection.content.trim()) {
+        sections.push({ ...currentSection });
+      }
+      
+      // Start new section
+      currentSection = {
+        title: line.replace(/^#+\s*/, ''),
+        content: line + '\n',
+        source: filename
+      };
+    } else {
+      currentSection.content += line + '\n';
+    }
+  }
+  
+  // Add the last section
+  if (currentSection.content.trim()) {
+    sections.push(currentSection);
+  }
+  
+  return sections;
+};
+
+// Load and process all markdown files from the data folder
+export const loadDataFiles = async () => {
+  try {
+    console.log('=== Loading data files ===');
+    
+    const dataDir = path.join(process.cwd(), 'data');
+    console.log('Data directory:', dataDir);
+    
+    if (!fs.existsSync(dataDir)) {
+      return { error: 'Data directory does not exist' };
+    }
+    
+    const files = fs.readdirSync(dataDir).filter(file => file.endsWith('.md'));
+    console.log('Found markdown files:', files);
+    
+    if (files.length === 0) {
+      return { message: 'No markdown files found in data directory' };
+    }
+    
+    let totalSections = 0;
+    const processedFiles: string[] = [];
+    
+    for (const file of files) {
+      try {
+        const filePath = path.join(dataDir, file);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        console.log(`Processing file: ${file}`);
+        
+        // Parse markdown into sections
+        const sections = parseMarkdown(content, file);
+        console.log(`Found ${sections.length} sections in ${file}`);
+        
+        // Process each section
+        for (const section of sections) {
+          const sectionContent = `File: ${section.source}\nSection: ${section.title}\n\n${section.content}`;
+          
+          // Create resource entry
+          const [resource] = await db
+            .insert(resources)
+            .values({ content: sectionContent })
+            .returning();
+          
+          // Generate and store embeddings
+          const embeddings = await generateEmbeddings(sectionContent);
+          await db.insert(embeddingsTable).values(embeddings.map(embedding => ({
+            resourceId: resource.id, ...embedding
+          })));
+          
+          totalSections++;
+        }
+        
+        processedFiles.push(file);
+      } catch (fileError) {
+        console.error(`Error processing file ${file}:`, fileError);
+      }
+    }
+    
+    return {
+      message: `Successfully processed ${processedFiles.length} files with ${totalSections} sections`,
+      processedFiles,
+      totalSections
+    };
+    
+  } catch (e) {
+    console.error('Error loading data files:', e);
+    return { error: 'Error loading data files: ' + (e instanceof Error ? e.message : 'Unknown error') };
   }
 };
 

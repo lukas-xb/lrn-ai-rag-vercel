@@ -1,7 +1,7 @@
 import { createOllama } from "ollama-ai-provider"
 import { streamText, UIMessage, tool } from "ai"
 import { z } from "zod"
-import { createResource, debugKnowledgeBase, findRelevantContent } from "@/lib/actions/resources";
+import { createResource, debugKnowledgeBase, findRelevantContent, loadDataFiles } from "@/lib/actions/resources";
 
 const ollama = createOllama();
 const model = ollama("llama3.2")
@@ -88,6 +88,37 @@ export async function POST(req: Request) {
             }
         }
 
+        if (lastUserMessage.toLowerCase().includes('load') && lastUserMessage.toLowerCase().includes('data')) {
+            console.log('*** Detected load data files request - calling tool directly ***');
+            try {
+                const result = await loadDataFiles();
+                console.log('Load data files result:', result);
+
+                return new Response(JSON.stringify({
+                    choices: [{
+                        delta: {
+                            content: `Data loading complete!\n\n${result.message || result.error}`
+                        }
+                    }],
+                    done: true
+                }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch (error) {
+                console.error('Error loading data files:', error);
+                return new Response(JSON.stringify({
+                    choices: [{
+                        delta: {
+                            content: 'Error loading data files: ' + (error instanceof Error ? error.message : 'Unknown error')
+                        }
+                    }],
+                    done: true
+                }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+        }
+
         // For all other messages, search the knowledge base first
         console.log('*** Searching knowledge base for relevant content ***');
         try {
@@ -107,7 +138,8 @@ export async function POST(req: Request) {
                 system: `You are a helpful assistant. ${systemContext}
 
 To add information to the knowledge base, users should say "Add this to knowledge base: [content]".
-To check the database, users should say "Check the database".`,
+To check the database, users should say "Check the database".
+To load markdown files from the data folder, users should say "Load data files".`,
                 messages: messages,
             });
 
