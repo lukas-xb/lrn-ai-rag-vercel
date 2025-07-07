@@ -6,7 +6,7 @@ The chatbot only responds with information that it has within its knowledge base
 
 Instead of calling `tools` which fails sometimes even in supported Ollama models, it parses user request and triggers dedicated tool-like functions. This allows running tool-like operations in models in Ollama that don't support [tools](https://ollama.com/search?c=tools), such as `gemma3n`.
 
-It's a learning project for another app -- it contains logs of actions comments and stuff left for further reference.
+It's a learning project I used to skill up for building another app in which I swap `Postgress` and `pgvector` with `SQLite` -- it contains logs of actions, comments, and stuff left for further reference.
 
 Uses the following stack:
 
