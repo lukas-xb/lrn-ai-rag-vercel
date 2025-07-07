@@ -1,5 +1,5 @@
 import { createOllama } from "ollama-ai-provider"
-import { streamText, UIMessage, tool } from "ai"
+import { streamText, UIMessage } from "ai"
 import { z } from "zod"
 import { createResource, debugKnowledgeBase, findRelevantContent, loadDataFiles } from "@/lib/actions/resources";
 
