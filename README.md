@@ -1,12 +1,12 @@
 # Vercel AI SDK RAG with Ollama and Next.js
 
-This is a learning project built on top of Starter project for the Vercel AI SDK [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
+This is a learning project built on top of **Starter project for the Vercel AI SDK** [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
 
 The chatbot only responds with information that it has within its knowledge base. It can store and retrieve information.
 
 Instead of calling `tools` which fails sometimes even in supported Ollama models, it parses user request and triggers dedicated tool-like functions. This allows running tool-like operations in models in Ollama that don't support [tools](https://ollama.com/search?c=tools), such as `gemma3n`.
 
-It's a learning project for another app -- it contains logs of actions left for further reference.
+It's a learning project for another app -- it contains logs of actions comments and stuff left for further reference.
 
 Uses the following stack:
 
