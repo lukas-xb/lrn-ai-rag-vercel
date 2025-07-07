@@ -1,4 +1,4 @@
-# Vercel AI SDK RAG Guide Starter Project
+# Vercel AI SDK RAG with Ollama and Next.js
 
 This is a learning project built on top of Starter project for the Vercel AI SDK [Retrieval-Augmented Generation (RAG) guide](https://sdk.vercel.ai/docs/guides/rag-chatbot).
 
