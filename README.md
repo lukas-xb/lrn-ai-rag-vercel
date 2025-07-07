@@ -12,8 +12,5 @@ Uses the following stack:
 - [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - Replaces [OpenAI](https://openai.com) with locally running [Ollama](https://ollama.com) as LLM and [embedding generator](https://ollama.com/blog/embedding-models).
 - [Drizzle ORM](https://orm.drizzle.team) and [Zod](https://zod.dev/) for validation.
-- [Postgres](https://www.postgresql.org/) with [ pgvector ](https://github.com/pgvector/pgvector) - runs Postgres in Docker using `pgvector/pgvector`
-  ```sh
-    docker run -e POSTGRES_USER=your_postgres_user -e POSTGRES_PASSWORD=your_password --name postgres -p 5432:5432 -d pgvector/pgvector
-  ```
+- [Postgres](https://www.postgresql.org/) with [ pgvector ](https://github.com/pgvector/pgvector) - runs Postgres in Docker
 - [shadcn-ui](https://ui.shadcn.com) and [TailwindCSS](https://tailwindcss.com) for styling
